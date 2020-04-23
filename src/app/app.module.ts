@@ -10,6 +10,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { Stepcounter } from '@ionic-native/stepcounter/ngx';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { BrowserTab } from '@ionic-native/browser-tab/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +21,8 @@ import { Stepcounter } from '@ionic-native/stepcounter/ngx';
     StatusBar,
     SplashScreen,
     Stepcounter,
+    NativeStorage,
+    BrowserTab,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

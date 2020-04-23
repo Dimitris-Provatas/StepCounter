@@ -1,19 +1,15 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      StepCounter
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   
-  <div *ngIf="steps">
-    {{steps?.numberOfSteps}}
-  </div>
-
-  <div *ngIf="error">
-    {{error}}
+  <div>
+    {{steps}}
   </div>
 
 </ion-content>
