@@ -1,0 +1,7 @@
+{
+  "name": "StepCounter",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
