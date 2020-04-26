@@ -74,6 +74,13 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+
+  /** custom **/
+  --lightPurple: rgb(202, 111, 255);
+  --darkPurple: rgb(153, 0, 145);
+  --lightBlue: rgb(101, 198, 255);
+  --darkBlue: rgb(0, 4, 219);
+
 }
 
 @media (prefers-color-scheme: dark) {

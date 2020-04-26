@@ -1,15 +1,25 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
       StepCounter
     </ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content [fullscreen]="true">
-  
-  <div>
+
+  <h1>Steps</h1>
+
+  <div class="header-border">
     {{steps}}
   </div>
 
 </ion-content>
+
+<ion-footer>
+  
+  <ion-button fill="outline" shape="round" (click)="changeAction()" [disabled]="!canCount">
+    {{action}}
+  </ion-button>
+
+</ion-footer>
