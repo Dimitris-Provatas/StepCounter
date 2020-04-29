@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController, Platform } from '@ionic/angular'
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AlertController, LoadingController, Platform, ModalController } from '@ionic/angular'
 
 import { Stepcounter } from '@ionic-native/stepcounter/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+
+import { AnalyzeDataService } from '../Services/analyze-data/analyze-data.service';
+
+import { AnalysisComponent } from '../analysis/analysis.component';
 
 const startingTheDay: number = 0;
 
@@ -12,35 +17,69 @@ const startingTheDay: number = 0;
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit
+export class HomePage implements OnInit, OnDestroy
 {
   steps: number = 0;      // number of steps that have been counted since the start
   isCounting = false;     // bool to check if the app has started counting
-  canCount = false;        // bool to know if the device can count
+  canCount = false;       // bool to know if the device can count
   intervalCounting: any;  // how often the step count will be updated on the screen
 
-  action: string = "Initializing...";
+  actionButton: string = "Initializing...";
+  action: string = "Not Counting"
+
+  points;
 
   constructor(private stepcounter: Stepcounter,
               private storage: NativeStorage,
               private platform: Platform,
               private backgroundMode: BackgroundMode,
+              private geo: BackgroundGeolocation,
+              private loadingctrl: LoadingController,
               private alertctrl: AlertController,
+              private modalctrl: ModalController,
+              private analyzeData: AnalyzeDataService
               )
   {}
 
   ngOnInit()
   {
+    this.platform.ready().then(() =>
+    {
+      // this.initialize()
+    })
+  }
+
+  ngOnDestroy()
+  {
+    if (!this.backgroundMode.isActive())
+    {
+      clearInterval(this.intervalCounting)
+    }
   }
 
   async initialize()
   {
-    const deviceCanCount = await this.stepcounter.deviceCanCountSteps();
+    await this.loadingctrl.create(
+    {
+      message: "Initializing StepCounter Plugin API...",
+      animated: true,
+      spinner: "lines",
+      cssClass: 'custom-loading'
+    }).then(async loading =>
+    {
+      await loading.present().then(async () =>
+      {
+        await this.stepcounter.deviceCanCountSteps().then(deviceCanCount =>
+        {
+          if (deviceCanCount)
+            this.deviceCanCount(startingTheDay);
+          else
+            this.deviceCannotCount();
 
-    if (deviceCanCount)
-      this.deviceCanCount(startingTheDay)
-    else
-      this.deviceCannotCount()
+          loading.dismiss();
+        });
+      });
+    });
   }
 
   async deviceCanCount(countOffset)
@@ -49,9 +88,10 @@ export class HomePage implements OnInit
     {
       this.backgroundMode.enable();
 
-      this.action = "Stop Counting";
+      this.actionButton = "Stop Counting";
       this.isCounting = true;
       this.canCount = true;
+      this.action = "Counting..."
 
       this.intervalCounting = setInterval(async () =>
       {
@@ -74,7 +114,7 @@ export class HomePage implements OnInit
     }).then(async alert =>
     {
       await alert.present();
-      this.action = "Start Counting";
+      this.actionButton = "Start Counting";
     })
   }
 
@@ -98,8 +138,9 @@ export class HomePage implements OnInit
     }).then(async alert =>
     {
       await alert.present();
-      this.action = "Start Counting"
+      this.actionButton = "Start Counting"
       this.isCounting = false;
+      this.action = "Not Counting"
     })
   }
 
@@ -115,8 +156,35 @@ export class HomePage implements OnInit
     }).then(async alert =>
     {
       await alert.present();
-      this.action = "Stop Counting"
+      this.actionButton = "Stop Counting"
       this.isCounting = true;
+      this.action = "Counting..."
+    })
+  }
+
+  analyze(data)
+  {
+    this.loadingctrl.create(
+    {
+      message: "Analyzing Data...",
+      animated: true,
+      spinner: "lines",
+      cssClass: 'custom-loading'
+    }).then(async loading =>
+    {
+      this.analyzeData.analyze(data).then(analysis =>
+      {
+        this.modalctrl.create(
+        {
+          component: AnalysisComponent,
+          componentProps: { analysis },
+          backdropDismiss: true
+        }).then(async modal =>
+        {
+          await loading.dismiss();
+          modal.present();
+        })
+      })
     })
   }
 

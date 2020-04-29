@@ -5,7 +5,7 @@ ion-content
   h1
   {
     text-transform: uppercase;
-    font-size: 3em;
+    font-size: 2em;
 
     background: linear-gradient(to right, var(--lightBlue), var(--darkBlue));
     -webkit-background-clip: text;
@@ -14,9 +14,9 @@ ion-content
 
   .header-border
   {
-    margin: 10%;
-
-    font-size: 3em;
+    margin: 25% 10% 10% 10%;
+    min-width: 4em;
+    font-size: 5em;
 
     border: 3px solid transparent;
     border-radius: 50vw;
@@ -38,4 +38,11 @@ ion-footer
   {
     font-size: 1.5em;
   }
+}
+
+.custom-loading
+{
+  --max-width: 75vw;
+  --spinner-color: var(--darkPurple);
+  text-align: center;
 }

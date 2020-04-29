@@ -12,6 +12,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { Stepcounter } from '@ionic-native/stepcounter/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+
+import { AnalyzeDataService } from './Services/analyze-data/analyze-data.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +26,8 @@ import { BackgroundMode } from '@ionic-native/background-mode/ngx';
     Stepcounter,
     NativeStorage,
     BackgroundMode,
+    AnalyzeDataService,
+    BackgroundGeolocation,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

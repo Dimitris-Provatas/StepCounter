@@ -1,25 +1,34 @@
-<!-- <ion-header [translucent]="true">
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      StepCounter
+      Step Counter App
     </ion-title>
   </ion-toolbar>
-</ion-header> -->
+</ion-header>
 
 <ion-content [fullscreen]="true">
 
-  <h1>Steps</h1>
+  <hr>
+  <h1>{{action}}</h1>
 
   <div class="header-border">
     {{steps}}
   </div>
+  <h1>Steps Counted</h1>
 
 </ion-content>
 
 <ion-footer>
   
   <ion-button fill="outline" shape="round" (click)="changeAction()" [disabled]="!canCount">
-    {{action}}
+    {{actionButton}}
   </ion-button>
+
+  <br>
+
+  <ion-button fill="outline" shape="round" (click)="analyze({steps: this.steps})" [disabled]="steps <= 0">
+    Analyze
+  </ion-button>
+
 
 </ion-footer>
