@@ -11,8 +11,12 @@ export class AnalyzeDataService
 
   async analyze(data)
   {
-    let analysis = {};
+    const steps = data.steps;
+    const points = data.points;
 
-    return await analysis;
+    return await
+    {
+
+    };
   }
 }

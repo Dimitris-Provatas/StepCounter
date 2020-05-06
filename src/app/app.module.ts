@@ -13,6 +13,8 @@ import { Stepcounter } from '@ionic-native/stepcounter/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { OpenNativeSettings } from '@ionic-native/open-native-settings/ngx';
 
 import { AnalyzeDataService } from './Services/analyze-data/analyze-data.service';
 
@@ -28,6 +30,8 @@ import { AnalyzeDataService } from './Services/analyze-data/analyze-data.service
     BackgroundMode,
     AnalyzeDataService,
     BackgroundGeolocation,
+    Diagnostic,
+    OpenNativeSettings,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

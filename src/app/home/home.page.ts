@@ -5,6 +5,8 @@ import { Stepcounter } from '@ionic-native/stepcounter/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { OpenNativeSettings } from '@ionic-native/open-native-settings/ngx';
 
 import { AnalyzeDataService } from '../Services/analyze-data/analyze-data.service';
 
@@ -34,6 +36,8 @@ export class HomePage implements OnInit, OnDestroy
               private platform: Platform,
               private backgroundMode: BackgroundMode,
               private geo: BackgroundGeolocation,
+              private diagnostic: Diagnostic,
+              private settings: OpenNativeSettings,
               private loadingctrl: LoadingController,
               private alertctrl: AlertController,
               private modalctrl: ModalController,
@@ -84,7 +88,7 @@ export class HomePage implements OnInit, OnDestroy
 
   async deviceCanCount(countOffset)
   {
-    this.stepcounter.start(countOffset).then(() =>
+    this.stepcounter.start(countOffset).then(async () =>
     {
       this.backgroundMode.enable();
 
@@ -97,6 +101,41 @@ export class HomePage implements OnInit, OnDestroy
       {
         this.steps = await this.stepcounter.getStepCount()
       }, 1000)
+
+      if (this.diagnostic.isGpsLocationEnabled())
+        this.geo.configure(
+        {
+          desiredAccuracy: 1,
+          stationaryRadius: 5,
+          distanceFilter: 5,
+          interval: 5000,
+          fastestInterval: 2500,
+          activitiesInterval: 5000,
+          startOnBoot: true,
+          stopOnTerminate: false,
+          notificationsEnabled: false,
+          startForeground: true,
+          notificationTitle: "Background Location Usage",
+          notificationText: "This app uses your location on the background, in order to track the distance you have walked. NOTE: We do NOT use this information in any way."
+        })
+      else
+        await this.alertctrl.create(
+        {
+          header: "Error",
+          message: "Geolocation is not enabled on this device. Please enable it and restart the application.",
+          buttons: [
+          {
+            text: 'Settings',
+            role: 'ok',
+            handler: () =>
+            {
+              this.settings.open("location")
+            }
+          }]
+        }).then(alert =>
+        {
+          alert.present();
+        })
     })
   }
 
@@ -141,6 +180,7 @@ export class HomePage implements OnInit, OnDestroy
       this.actionButton = "Start Counting"
       this.isCounting = false;
       this.action = "Not Counting"
+      this.geo.stop();
     })
   }
 
@@ -158,13 +198,25 @@ export class HomePage implements OnInit, OnDestroy
       await alert.present();
       this.actionButton = "Stop Counting"
       this.isCounting = true;
-      this.action = "Counting..."
+      this.action = "Counting...";
+      this.geo.start();
     })
   }
 
-  analyze(data)
+  async analyze()
   {
-    this.loadingctrl.create(
+    await this.geo.getLocations().then(locations =>
+    {
+      this.points = locations
+    })
+
+    const data =
+    {
+      steps: this.steps,
+      points: this.points
+    }
+
+    await this.loadingctrl.create(
     {
       message: "Analyzing Data...",
       animated: true,
@@ -172,6 +224,8 @@ export class HomePage implements OnInit, OnDestroy
       cssClass: 'custom-loading'
     }).then(async loading =>
     {
+      loading.present()
+
       this.analyzeData.analyze(data).then(analysis =>
       {
         this.modalctrl.create(
